@@ -1,14 +1,14 @@
 [package]
-name = "vitsel"
-version = "1.0.2"
-edition = "2024"
+name = "edm_gtr"
+version = "0.1.0"
+edition = "2021"
 license = "MIT"
-authors = ["mlm-games"]
-description = "Vitsel: minimal Rust CLAP synth"
-repository = "https://github.com/mlm-games/vitsel-clap"
+authors = ["you"]
+description = "Ednitar: minimal EDM guitar CLAP effect"
+repository = "https://github.com/yourname/edm-gtr-clap"
 readme = "README.md"
 categories = ["multimedia::audio", "multimedia::audio::plugins"]
-keywords = ["clap", "synth", "audio", "android", "nih-plug"]
+keywords = ["clap", "guitar", "edm", "audio", "nih-plug"]
 
 [lib]
 crate-type = ["cdylib"]
