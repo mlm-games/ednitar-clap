@@ -9,7 +9,7 @@ use std::sync::Arc;
 use dsp::{GuitarChain, StereoFx};
 use params::GtrParams;
 
-pub struct EdmGtr {
+pub struct Ednitar {
     params: Arc<GtrParams>,
     sample_rate: f32,
     chain_l: GuitarChain,
@@ -17,7 +17,7 @@ pub struct EdmGtr {
     fx: StereoFx,
 }
 
-impl Default for EdmGtr {
+impl Default for Ednitar {
     fn default() -> Self {
         let sr = 44100.0;
         Self {
@@ -30,8 +30,8 @@ impl Default for EdmGtr {
     }
 }
 
-impl Plugin for EdmGtr {
-    const NAME: &'static str = "EdmGtr";
+impl Plugin for Ednitar {
+    const NAME: &'static str = "Ednitar";
     const VENDOR: &'static str = "me";
     const URL: &'static str = "https://website.com";
     const EMAIL: &'static str = "me@website.com";
@@ -115,8 +115,8 @@ impl Plugin for EdmGtr {
 }
 
 // CLAP metadata
-impl ClapPlugin for EdmGtr {
-    const CLAP_ID: &'static str = "dev.example.edmgtr";
+impl ClapPlugin for Ednitar {
+    const CLAP_ID: &'static str = "dev.example.ednitar";
     const CLAP_DESCRIPTION: Option<&'static str> =
         Some("Minimal EDM guitar CLAP effect (stereo, IIR cab).");
     const CLAP_FEATURES: &'static [ClapFeature] = &[
@@ -133,4 +133,4 @@ impl ClapPlugin for EdmGtr {
     const CLAP_SUPPORT_URL: Option<&'static str> = Some("Not yet");
 }
 
-nih_export_clap!(EdmGtr);
+nih_export_clap!(Ednitar);
