@@ -1,6 +1,5 @@
 mod dsp;
 mod params;
-mod presets;
 
 use nih_plug::prelude::*;
 use std::num::NonZeroU32;
@@ -84,29 +83,31 @@ impl Plugin for Ednitar {
         _aux: &mut AuxiliaryBuffers<'_>,
         _ctx: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
-        let params = self.params.clone();
-
         // Update per-block coefficients
-        self.chain_l.update_params(params.as_ref());
-        self.chain_r.update_params(params.as_ref());
+        self.chain_l.update_params(self.params.as_ref());
+        self.chain_r.update_params(self.params.as_ref());
 
         for mut frame in buffer.iter_samples() {
-            let mut it = frame.iter_mut();
-            if let Some(l_s) = it.next() {
-                let r_s_opt = it.next();
+            let num_ch = frame.len();
+            if num_ch == 0 {
+                continue;
+            }
 
-                let in_l = *l_s;
-                let in_r = r_s_opt.as_deref().copied().unwrap_or(in_l);
+            let in_l = *frame.get_mut(0).unwrap();
+            let in_r = if num_ch > 1 {
+                *frame.get_mut(1).unwrap()
+            } else {
+                in_l
+            };
 
-                let dry_l = self.chain_l.process_sample(in_l, params.as_ref());
-                let dry_r = self.chain_r.process_sample(in_r, params.as_ref());
+            let dry_l = self.chain_l.process_sample(in_l, self.params.as_ref());
+            let dry_r = self.chain_r.process_sample(in_r, self.params.as_ref());
 
-                let (out_l, out_r) = self.fx.process_frame(dry_l, dry_r, params.as_ref());
+            let (out_l, out_r) = self.fx.process_frame(dry_l, dry_r, self.params.as_ref());
 
-                *l_s = out_l;
-                if let Some(r_s) = r_s_opt {
-                    *r_s = out_r;
-                }
+            *frame.get_mut(0).unwrap() = out_l;
+            if num_ch > 1 {
+                *frame.get_mut(1).unwrap() = out_r;
             }
         }
 

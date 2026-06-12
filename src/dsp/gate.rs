@@ -57,8 +57,9 @@ impl Gate {
             // close gate: fade gain towards 0
             self.gain *= self.gain_release_coeff;
         } else {
-            // open gate: approach 1 quickly
-            let open_coeff = 0.5; // 0..1, higher = faster
+            // open gate: approach 1 with sample-rate-independent attack
+            let attack_s = 0.001; // 1ms attack
+            let open_coeff = 1.0 - time_to_coeff(attack_s, self.sr);
             self.gain += (1.0 - self.gain) * open_coeff;
         }
 

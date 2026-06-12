@@ -1,7 +1,7 @@
 // src/dsp/chain.rs
 use crate::dsp::amp::Amp;
 use crate::dsp::cab::Cab;
-use crate::dsp::filters::OnePoleHp;
+use crate::dsp::filters::{OnePoleHp, OnePoleLp};
 use crate::dsp::gate::Gate;
 use crate::params::GtrParams;
 
@@ -11,6 +11,7 @@ pub struct GuitarChain {
     pre_lowcut: OnePoleHp,
     amp: Amp,
     cab: Cab,
+    input_gain_smooth: OnePoleLp,
 }
 
 impl GuitarChain {
@@ -21,6 +22,7 @@ impl GuitarChain {
             pre_lowcut: OnePoleHp::new(),
             amp: Amp::new(sr),
             cab: Cab::new(sr),
+            input_gain_smooth: OnePoleLp::new(),
         };
         chain.reset(sr);
         chain
@@ -33,6 +35,8 @@ impl GuitarChain {
         self.pre_lowcut.set_cutoff(self.sr, 100.0);
         self.amp.reset(sr);
         self.cab.reset(sr);
+        self.input_gain_smooth = OnePoleLp::new();
+        self.input_gain_smooth.set_cutoff(self.sr, 30.0);
     }
 
     /// Called once per processing block to update filter coefficients etc.
@@ -40,13 +44,13 @@ impl GuitarChain {
         self.gate.update_params(self.sr, p);
         // user-controlled low cut
         self.pre_lowcut.set_cutoff(self.sr, p.low_cut_hz.value());
-        self.cab.update_params(self.sr);
     }
 
     #[inline]
     pub fn process_sample(&mut self, x: f32, p: &GtrParams) -> f32 {
-        // Input gain before anything
-        let mut s = x * p.input_linear();
+        // Input gain before anything (smoothed to avoid zipper noise)
+        let in_gain = self.input_gain_smooth.process(p.input_linear());
+        let mut s = x * in_gain;
 
         // Noise gate
         s = self.gate.process_sample(s);

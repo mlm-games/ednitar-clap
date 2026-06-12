@@ -1,3 +1,4 @@
+use crate::dsp::filters::OnePoleLp;
 use crate::dsp::{fast_tanh, flush_denormals, time_to_coeff};
 use crate::params::GtrParams;
 
@@ -81,27 +82,34 @@ pub struct StereoFx {
     delay_l: DelayLine,
     delay_r: DelayLine,
     limiter: Limiter,
+    output_gain_smooth: OnePoleLp,
 }
 
 impl StereoFx {
     pub fn new(sr: f32) -> Self {
         // Use relatively short prime-ish delays
-        let dl = (0.040 * sr as f32) as usize; // ~40ms
-        let dr = (0.047 * sr as f32) as usize; // ~47ms
+        let dl = (0.040 * sr) as usize; // ~40ms
+        let dr = (0.047 * sr) as usize; // ~47ms
+
+        let mut og_smooth = OnePoleLp::new();
+        og_smooth.set_cutoff(sr, 30.0);
 
         Self {
             sr,
             delay_l: DelayLine::new(dl),
             delay_r: DelayLine::new(dr),
             limiter: Limiter::new(sr),
+            output_gain_smooth: og_smooth,
         }
     }
 
     pub fn reset(&mut self, sr: f32) {
         self.sr = sr;
-        self.delay_l = DelayLine::new((0.040 * sr as f32) as usize);
-        self.delay_r = DelayLine::new((0.047 * sr as f32) as usize);
+        self.delay_l = DelayLine::new((0.040 * sr) as usize);
+        self.delay_r = DelayLine::new((0.047 * sr) as usize);
         self.limiter.update_params(sr);
+        self.output_gain_smooth = OnePoleLp::new();
+        self.output_gain_smooth.set_cutoff(sr, 30.0);
     }
 
     #[inline]
@@ -123,17 +131,19 @@ impl StereoFx {
         let mut l = dry_l * (1.0 - mix) + wet_l * mix;
         let mut r = dry_r * (1.0 - mix) + wet_r * mix;
 
-        // Width via M/S
+        // Width via M/S with energy compensation
         let mid = 0.5 * (l + r);
         let side = 0.5 * (l - r);
-        let side_gain = 1.0 + width * 1.5; // up to ~+3.5dB side
+        let side_gain = 1.0 + width * 1.5;
         let new_side = side * side_gain;
 
-        l = mid + new_side;
-        r = mid - new_side;
+        // Reduce mid to compensate for boosted side, preserving approximate energy
+        let mid_gain = 1.0 / (1.0 + side_gain * side_gain).sqrt();
+        l = mid * mid_gain + new_side;
+        r = mid * mid_gain - new_side;
 
-        // Apply output gain then limiter if enabled
-        let out_gain = p.output_linear();
+        // Apply output gain (smoothed to avoid zipper noise) then limiter if enabled
+        let out_gain = self.output_gain_smooth.process(p.output_linear());
         l *= out_gain;
         r *= out_gain;
 

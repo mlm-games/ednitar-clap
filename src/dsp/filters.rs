@@ -3,24 +3,24 @@ use core::f32::consts::PI;
 
 /// One-pole low-pass filter.
 pub struct OnePoleLp {
-    a: f32,
+    b0: f32,
     z: f32,
 }
 
 impl OnePoleLp {
     pub fn new() -> Self {
-        Self { a: 0.0, z: 0.0 }
+        Self { b0: 0.0, z: 0.0 }
     }
 
     pub fn set_cutoff(&mut self, sr: f32, hz: f32) {
         let hz = hz.max(1.0).min(sr * 0.45);
-        let a = (-2.0 * PI * hz / sr).exp();
-        self.a = 1.0 - a;
+        let pole = (-2.0 * PI * hz / sr).exp();
+        self.b0 = 1.0 - pole;
     }
 
     #[inline]
     pub fn process(&mut self, x: f32) -> f32 {
-        self.z += self.a * (x - self.z);
+        self.z += self.b0 * (x - self.z);
         flush_denormals(self.z)
     }
 }

@@ -1,18 +1,14 @@
 use crate::dsp::{fast_tanh, flush_denormals};
 use crate::params::{AmpModel, GtrParams};
 
-pub struct Amp {
-    sr: f32,
-}
+pub struct Amp;
 
 impl Amp {
-    pub fn new(sr: f32) -> Self {
-        Self { sr }
+    pub fn new(_sr: f32) -> Self {
+        Self
     }
 
-    pub fn reset(&mut self, sr: f32) {
-        self.sr = sr;
-    }
+    pub fn reset(&mut self, _sr: f32) {}
 
     #[inline]
     pub fn process_sample(&mut self, x: f32, p: &GtrParams) -> f32 {

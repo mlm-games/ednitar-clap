@@ -31,14 +31,6 @@ impl Cab {
         self.air_hp.set_cutoff(self.sr, 8000.0);
     }
 
-    pub fn update_params(&mut self, sr: f32) {
-        self.sr = sr;
-        // If you want sample-rate dependent recalcs, do them here.
-        self.tilt.set_pivot(self.sr, 1600.0);
-        self.presence_hp.set_cutoff(self.sr, 3000.0);
-        self.air_hp.set_cutoff(self.sr, 8000.0);
-    }
-
     #[inline]
     pub fn process_sample(&mut self, x: f32, p: &GtrParams) -> f32 {
         let mut y = x;

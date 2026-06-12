@@ -1,11 +1,10 @@
 [package]
-name = "edm_gtr"
+name = "ednitar"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-authors = ["you"]
 description = "Ednitar: minimal EDM guitar CLAP effect"
-repository = "https://github.com/yourname/edm-gtr-clap"
+repository = "https://github.com/anomalyco/ednitar-clap"
 readme = "README.md"
 categories = ["multimedia::audio", "multimedia::audio::plugins"]
 keywords = ["clap", "guitar", "edm", "audio", "nih-plug"]

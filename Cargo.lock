@@ -172,7 +172,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "edm_gtr"
+name = "ednitar"
 version = "0.1.0"
 dependencies = [
  "nih_plug",
