@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev
+      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libx11-xcb-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxss-dev
     - run: cargo build
     - run: cargo test
     # - run: cargo clippy -- -D warnings
@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
     - name: Install system dependencies
-      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev
+      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libx11-xcb-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxss-dev
     - run: cargo build --release
     - run: cp target/release/libednitar.so Ednitar.clap
     - uses: actions/upload-artifact@v4
