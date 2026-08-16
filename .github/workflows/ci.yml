@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev
     - run: cargo build
     - run: cargo test
     # - run: cargo clippy -- -D warnings
@@ -21,6 +23,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y libasound2-dev libx11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libgl-dev libegl-dev libwayland-dev
     - run: cargo build --release
     - run: cp target/release/libednitar.so Ednitar.clap
     - uses: actions/upload-artifact@v4
@@ -52,7 +56,7 @@ jobs:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
       run: |
         cargo install cargo-ndk --locked
-        cargo ndk -t arm64-v8a --platform 26 build --release
+        cargo ndk -t arm64-v8a --platform 26 build --release --no-default-features
         cp target/aarch64-linux-android/release/libednitar.so Ednitar.clap
     - uses: actions/upload-artifact@v4
       with: { name: ednitar-android-arm64, path: Ednitar.clap }

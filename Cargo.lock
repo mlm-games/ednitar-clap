@@ -1950,6 +1950,7 @@ dependencies = [
 [[package]]
 name = "repose-audui"
 version = "0.1.0"
+source = "git+https://github.com/mlm-games/repose-audui#b6927975d12bee6a59b4cf9c62a21a796a4fdcae"
 dependencies = [
  "anyhow",
  "baseview",
