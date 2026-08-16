@@ -12,8 +12,26 @@ keywords = ["clap", "guitar", "edm", "audio", "nih-plug"]
 [lib]
 crate-type = ["cdylib"]
 
+[features]
+default = ["gui"]
+gui = [
+    "dep:repose-audui",
+    "dep:repose-app",
+    "dep:repose-core",
+    "dep:repose-ui",
+    "dep:repose-material",
+]
+
 [dependencies]
 nih_plug = { git = "https://github.com/robbert-vdh/nih-plug", branch = "master" }
+
+repose-audui = { git = "https://github.com/mlm-games/repose-audui", features = [
+    "nih-plug",
+], optional = true }
+repose-app = { version = "0.27", optional = true }
+repose-core = { version = "0.27", optional = true }
+repose-ui = { version = "0.27", optional = true }
+repose-material = { version = "0.27", optional = true }
 
 [profile.release]
 lto = "thin"

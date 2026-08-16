@@ -1,5 +1,7 @@
 mod dsp;
 mod params;
+#[cfg(feature = "gui")]
+mod editor;
 
 use nih_plug::prelude::*;
 use std::num::NonZeroU32;
@@ -54,6 +56,11 @@ impl Plugin for Ednitar {
 
     fn params(&self) -> Arc<dyn Params> {
         self.params.clone()
+    }
+
+    #[cfg(feature = "gui")]
+    fn editor(&mut self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
+        editor::create_editor(self.params.clone())
     }
 
     fn initialize(
